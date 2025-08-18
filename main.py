@@ -23,7 +23,23 @@ class TextGeometryEncoder:
         self.model = gensim.downloader.load(model_name)
         self.model_name = model_name
         self.vector_size = self.model.vector_size
-        print(f"Model loaded successfully. Vector dimension: {self.vector_size}")
+        if model_name in TextGeometryEncoder._model_cache:
+            print(f"Using cached model: {model_name}")
+            self.model = TextGeometryEncoder._model_cache[model_name]
+        else:
+            print(f"Loading model: {model_name}")
+            try:
+                self.model = gensim.downloader.load(model_name)
+                TextGeometryEncoder._model_cache[model_name] = self.model
+                print(f"Model loaded successfully. Vector dimension: {self.model.vector_size}")
+            except (ValueError, IOError, OSError, MemoryError) as e:
+                print(f"Error loading model '{model_name}': {e}")
+                raise
+            except Exception as e:
+                print(f"Unexpected error loading model '{model_name}': {e}")
+                raise
+        self.model_name = model_name
+        self.vector_size = self.model.vector_size
     
     def preprocess_text(self, text: str) -> List[str]:
         """
