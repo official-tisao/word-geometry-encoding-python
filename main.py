@@ -52,7 +52,19 @@ class TextGeometryEncoder:
             List of cleaned tokens
         """
         # Convert to lowercase and remove special characters
-        text = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
+    def preprocess_text(self, text: str, clean_pattern: str = r"[^a-zA-Z0-9\s\-']") -> List[str]:
+        """
+        Preprocess text by cleaning and tokenizing
+        
+        Args:
+            text: Input text string
+            clean_pattern: Regex pattern for characters to remove (default preserves hyphens and apostrophes)
+            
+        Returns:
+            List of cleaned tokens
+        """
+        # Convert to lowercase and remove unwanted special characters (preserve hyphens and apostrophes by default)
+        text = re.sub(clean_pattern, '', text.lower())
         
         # Split into tokens
         tokens = text.split()
